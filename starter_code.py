@@ -30,12 +30,12 @@ def lcs_recursive(seq1, seq2):
     
     WARNING: This will be exponentially slow on large inputs!
     """
-    # TODO: Implement naive recursive solution
-    # Hint: Base case - if either sequence is empty, LCS length is 0
-    # Hint: If last characters match, LCS length = 1 + LCS of remaining sequences
-    # Hint: If last characters don't match, try removing last char from each sequence, take max
-    
-    pass  # Delete this and write your code
+    if not seq1 or not seq2:
+        return 0
+    if seq1[-1] == seq2[-1]:
+        return 1 + lcs_recursive(seq1[:-1], seq2[:-1])
+    else:
+        return max(lcs_recursive(seq1[:-1], seq2), lcs_recursive(seq1, seq2[:-1]))
 
 
 # ============================================================================
@@ -59,13 +59,18 @@ def lcs_memoization(seq1, seq2):
     Example:
         lcs_memoization("AGGTAB", "GXTXAYB") returns 4 (LCS is "GTAB")
     """
-    # TODO: Implement memoization solution
-    # Hint: Create a cache dictionary to store results
-    # Hint: Use tuple of (i, j) as key where i, j are positions in sequences
-    # Hint: Check cache before computing, store result before returning
-    # Hint: You may want to create a helper function that takes indices
-    
-    pass  # Delete this and write your code
+    memo = {}
+    def helper(i, j):
+        if i == 0 or j == 0:
+            return 0
+        if (i, j) in memo:
+            return memo[(i, j)]
+        if seq1[i-1] == seq2[j-1]:
+            memo[(i, j)] = 1 + helper(i-1, j-1)
+        else:
+            memo[(i, j)] = max(helper(i-1, j), helper(i, j-1))
+        return memo[(i, j)]
+    return helper(len(seq1), len(seq2))
 
 
 # ============================================================================
@@ -89,14 +94,15 @@ def lcs_tabulation(seq1, seq2):
     Example:
         lcs_tabulation("AGGTAB", "GXTXAYB") returns 4 (LCS is "GTAB")
     """
-    # TODO: Implement tabulation solution
-    # Hint: Create a 2D table where dp[i][j] = LCS length of seq1[0..i] and seq2[0..j]
-    # Hint: Initialize first row and column to 0 (empty sequence cases)
-    # Hint: Fill table row by row
-    # Hint: If characters match: dp[i][j] = dp[i-1][j-1] + 1
-    # Hint: If characters don't match: dp[i][j] = max(dp[i-1][j], dp[i][j-1])
-    
-    pass  # Delete this and write your code
+    m, n = len(seq1), len(seq2)
+    dp = [[0] * (n+1) for _ in range(m+1)]
+    for i in range(1, m+1):
+        for j in range(1, n+1):
+            if seq1[i-1] == seq2[j-1]:
+                dp[i][j] = dp[i-1][j-1] + 1
+            else:
+                dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+    return dp[m][n]
 
 
 # ============================================================================
@@ -240,8 +246,8 @@ if __name__ == "__main__":
     
     # Uncomment these as you complete each part:
     
-    # test_small_cases()
-    # time_recursive()
-    # compare_all_approaches()
+    test_small_cases()
+    time_recursive()
+    compare_all_approaches()
     
     print("\n⚠ Uncomment the test functions in the main block to run tests!")
